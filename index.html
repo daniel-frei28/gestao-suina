@@ -1,0 +1,1604 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestão Suína V2 | Gestão Inteligente</title>
+
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<style>
+:root{
+  --bg:#0c1117;
+  --sidebar:#111923;
+  --panel:#151f2a;
+  --panel2:#1b2835;
+  --panel3:#202f3d;
+  --line:#293847;
+  --text:#edf3f8;
+  --muted:#91a2b2;
+  --orange:#f07835;
+  --orange2:#ff9657;
+  --green:#35bd83;
+  --red:#ed6666;
+  --yellow:#e9b653;
+  --blue:#5a9de0;
+  --shadow:0 12px 35px rgba(0,0,0,.18);
+  --radius:15px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  background:var(--bg);
+  color:var(--text);
+  font:14px/1.5 Inter,Arial,sans-serif;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+.app{min-height:100vh}
+.sidebar{
+  position:fixed;inset:0 auto 0 0;width:250px;
+  background:var(--sidebar);border-right:1px solid var(--line);
+  padding:22px 15px;display:flex;flex-direction:column;z-index:20;
+}
+.brand{display:flex;align-items:center;gap:12px;padding:3px 9px 25px}
+.brand-icon{
+  width:43px;height:43px;border-radius:13px;
+  display:grid;place-items:center;background:linear-gradient(135deg,var(--orange),#d95b22);
+  color:white;font-size:20px;box-shadow:0 6px 18px #f0783530;
+}
+.brand h1{font-size:16px;margin:0;font-weight:800;letter-spacing:.2px}
+.brand p{font-size:10px;color:var(--muted);margin:2px 0 0;letter-spacing:1.2px;text-transform:uppercase}
+.nav-label{font-size:10px;color:#657789;font-weight:800;letter-spacing:1.3px;padding:12px 12px 7px}
+.nav{display:grid;gap:5px}
+.nav button{
+  display:flex;align-items:center;gap:12px;width:100%;
+  background:transparent;border:1px solid transparent;color:var(--muted);
+  border-radius:10px;padding:11px 13px;text-align:left;font-size:13px;font-weight:600;
+  transition:.18s;
+}
+.nav button i{width:19px;text-align:center;font-size:15px}
+.nav button:hover{background:var(--panel2);color:var(--text)}
+.nav button.active{
+  background:#f0783519;border-color:#f0783540;color:var(--orange2);
+}
+.sidebar-bottom{margin-top:auto;padding:15px 10px 4px;border-top:1px solid var(--line)}
+.sidebar-bottom small{color:var(--muted);font-size:11px}
+.version{display:flex;align-items:center;justify-content:space-between;margin-top:7px}
+.version strong{font-size:11px;color:var(--orange2)}
+.main{margin-left:250px;min-height:100vh}
+.topbar{
+  height:72px;padding:0 30px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:15px;
+  background:#0e151d;position:sticky;top:0;z-index:10;
+}
+.page-heading{display:flex;align-items:center;gap:12px}
+.page-heading h2{font-size:18px;margin:0;font-weight:750}
+.page-heading p{margin:2px 0 0;color:var(--muted);font-size:11px}
+.top-actions{display:flex;align-items:center;gap:10px}
+.top-date{color:var(--muted);font-size:12px}
+.content{max-width:1600px;margin:auto;padding:27px 30px 45px}
+.page{display:none}
+.page.active{display:block}
+.page-intro{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}
+.page-intro h3{margin:0;font-size:17px}
+.page-intro p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 14px;border-radius:9px;border:1px solid transparent;
+  font-size:12px;font-weight:750;transition:.18s;white-space:nowrap;
+}
+.btn-primary{background:var(--orange);color:#fff}
+.btn-primary:hover{background:var(--orange2);transform:translateY(-1px)}
+.btn-secondary{background:var(--panel2);border-color:var(--line);color:var(--text)}
+.btn-secondary:hover{background:var(--panel3)}
+.btn-danger{background:#512b30;border-color:#74373e;color:#ffb9bd}
+.btn-success{background:#173d30;border-color:#24664d;color:#8ce1ba}
+.btn-icon{width:34px;height:34px;padding:0;background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:8px}
+.btn-icon:hover{color:var(--orange2);border-color:var(--orange)}
+.stats{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;margin-bottom:17px;
+}
+.stat{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:17px;min-width:0;box-shadow:var(--shadow);
+}
+.stat-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.stat-label{color:var(--muted);font-size:11px;font-weight:650}
+.stat-icon{
+  width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+  background:#f0783518;color:var(--orange2);font-size:14px;
+}
+.stat-value{font-size:23px;font-weight:800;letter-spacing:-.6px;margin-top:12px;overflow-wrap:anywhere}
+.stat-foot{font-size:10px;color:var(--muted);margin-top:4px}
+.grid-2{display:grid;grid-template-columns:1.2fr .8fr;gap:15px;margin-bottom:16px}
+.grid-equal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.panel{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px;min-width:0;box-shadow:var(--shadow);
+}
+.panel-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
+.panel-header h3{margin:0;font-size:13px;font-weight:750}
+.panel-header small{color:var(--muted);font-size:10px}
+.result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.result-item{background:var(--panel2);border:1px solid var(--line);padding:13px;border-radius:10px;min-width:0}
+.result-item small{display:block;color:var(--muted);font-size:10px}
+.result-item strong{display:block;font-size:16px;margin-top:5px;overflow-wrap:anywhere}
+.positive{color:var(--green)!important}
+.negative{color:var(--red)!important}
+.warning-text{color:var(--yellow)!important}
+.muted{color:var(--muted)}
+.alert-list{display:grid;gap:8px}
+.alert{
+  padding:11px 12px;border:1px solid var(--line);border-left:3px solid var(--yellow);
+  background:var(--panel2);border-radius:9px;font-size:11px;display:flex;gap:10px;align-items:flex-start;
+}
+.alert i{color:var(--yellow);margin-top:2px}
+.alert.urgent{border-left-color:var(--red)}
+.alert.urgent i{color:var(--red)}
+.alert.ok{border-left-color:var(--green)}
+.alert.ok i{color:var(--green)}
+.empty{
+  text-align:center;padding:30px 15px;color:var(--muted);
+}
+.empty i{font-size:25px;color:#536577;margin-bottom:10px}
+.empty p{font-size:12px;margin:5px 0}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field.full{grid-column:1/-1}
+.field label{font-size:11px;color:var(--muted);font-weight:650}
+.field input,.field select,.field textarea,.toolbar input,.toolbar select{
+  width:100%;min-width:0;background:#0f1821;color:var(--text);
+  border:1px solid var(--line);border-radius:8px;padding:10px 11px;
+  outline:none;font-size:12px;
+}
+.field textarea{min-height:75px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus,
+.toolbar input:focus,.toolbar select:focus{border-color:var(--orange);box-shadow:0 0 0 2px #f0783518}
+.field input::placeholder,.field textarea::placeholder{color:#617284}
+.form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:17px}
+.toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+.toolbar input{max-width:270px}
+.toolbar select{width:auto;min-width:130px}
+.table-wrap{width:100%;overflow:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{padding:12px 11px;border-bottom:1px solid var(--line);text-align:left;font-size:11px;white-space:nowrap}
+th{background:#192532;color:var(--muted);font-weight:750;font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+td{color:#dce5ec}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#ffffff05}
+.row-actions{display:flex;gap:5px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:20px;font-size:10px;font-weight:750;background:#293745;color:#b9c9d7}
+.pill.good{background:#173b2e;color:#8ce0b7}
+.pill.warn{background:#49391c;color:#f0ce7a}
+.pill.bad{background:#48272c;color:#ffacb2}
+.pill.info{background:#1d3852;color:#9bcaff}
+.progress{height:6px;background:#293846;border-radius:20px;overflow:hidden;margin-top:8px}
+.progress span{display:block;height:100%;background:var(--orange);border-radius:20px}
+.cards-list{display:grid;gap:10px}
+.lot-card{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:14px}
+.lot-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.lot-card h4{font-size:13px;margin:0}
+.lot-card p{font-size:10px;color:var(--muted);margin:4px 0}
+.lot-card-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.lot-card-stats small{display:block;color:var(--muted);font-size:9px}
+.lot-card-stats strong{display:block;font-size:12px;margin-top:3px}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.note{
+  padding:12px;border-radius:9px;background:#30291c;border:1px solid #66502c;
+  color:#e9d49b;font-size:11px;margin-top:14px;
+}
+.note i{margin-right:6px}
+.section-separator{border:0;border-top:1px solid var(--line);margin:19px 0}
+.chart-placeholder{padding:20px 5px}
+.bar-row{display:grid;grid-template-columns:105px 1fr 85px;gap:9px;align-items:center;margin:12px 0}
+.bar-row label{font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.bar-track{height:9px;background:#283846;border-radius:20px;overflow:hidden}
+.bar-track span{height:100%;display:block;background:var(--orange);border-radius:20px}
+.bar-row strong{text-align:right;font-size:10px}
+.backup-box{display:flex;gap:12px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:15px;margin-bottom:12px}
+.backup-box>i{font-size:22px;color:var(--orange2);width:30px;text-align:center}
+.backup-box h4{margin:0;font-size:12px}
+.backup-box p{margin:3px 0 0;color:var(--muted);font-size:10px}
+.backup-box .btn{margin-left:auto}
+.toast{
+  position:fixed;right:20px;bottom:20px;z-index:100;
+  background:#1c342b;border:1px solid #347b5b;color:#a5edc7;
+  padding:12px 16px;border-radius:10px;font-size:12px;
+  box-shadow:var(--shadow);display:none;max-width:calc(100vw - 40px);
+}
+.toast.show{display:block;animation:fadein .2s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.modal-backdrop{
+  display:none;position:fixed;inset:0;background:#000a;z-index:60;
+  align-items:center;justify-content:center;padding:15px;
+}
+.modal-backdrop.show{display:flex}
+.modal{
+  width:min(560px,100%);max-height:90vh;overflow:auto;
+  background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:20px;
+}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.modal-head h3{margin:0;font-size:15px}
+.mobile-menu{display:none}
+.mobile-nav{display:none}
+.hidden{display:none!important}
+footer{padding:20px 2px;color:#657789;font-size:10px;text-align:center}
+
+@media(max-width:1100px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid-2{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .sidebar{width:225px;transform:translateX(-100%);transition:.2s;box-shadow:var(--shadow)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .topbar{height:64px;padding:0 15px}
+  .mobile-menu{display:inline-flex}
+  .top-date{display:none}
+  .content{padding:19px 14px 95px}
+  .page-heading h2{font-size:15px}
+  .page-heading p{font-size:10px}
+  .mobile-nav{
+    display:grid;grid-template-columns:repeat(5,1fr);position:fixed;bottom:0;left:0;right:0;
+    background:#111923;border-top:1px solid var(--line);z-index:30;
+    padding:7px 5px calc(7px + env(safe-area-inset-bottom));
+  }
+  .mobile-nav button{
+    border:0;background:transparent;color:#8495a5;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:4px;padding:5px 1px;font-size:9px;
+  }
+  .mobile-nav button i{font-size:16px}
+  .mobile-nav button.active{color:var(--orange2)}
+  .grid-equal{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .stats{gap:9px}
+  .stat{padding:12px;border-radius:12px}
+  .stat-value{font-size:18px;margin-top:9px}
+  .stat-label{font-size:10px}
+  .stat-icon{width:29px;height:29px;font-size:12px}
+  .panel{padding:14px}
+  .form-grid{grid-template-columns:1fr}
+  .field.full{grid-column:auto}
+  .page-intro{align-items:flex-start;flex-direction:column}
+  .page-intro .btn{width:100%}
+  .result-grid{gap:7px}
+  .result-item{padding:10px}
+  .result-item strong{font-size:14px}
+  .toolbar{display:grid;grid-template-columns:1fr 1fr}
+  .toolbar input{max-width:none;grid-column:1/-1}
+  .toolbar select{width:100%;min-width:0}
+  .toolbar .btn{width:100%}
+  .lot-card-stats{gap:5px}
+  .lot-card-stats strong{font-size:11px}
+  .backup-box{align-items:flex-start;flex-wrap:wrap}
+  .backup-box .btn{margin-left:42px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-icon"><i class="fa-solid fa-piggy-bank"></i></div>
+    <div>
+      <h1>Gestão Suína</h1>
+      <p>Gestão inteligente</p>
+    </div>
+  </div>
+
+  <div class="nav-label">GESTÃO</div>
+  <nav class="nav">
+    <button class="active" data-page="dashboard" onclick="navigate('dashboard')"><i class="fa-solid fa-gauge-high"></i> Dashboard</button>
+    <button data-page="lotes" onclick="navigate('lotes')"><i class="fa-solid fa-layer-group"></i> Lotes</button>
+    <button data-page="despesas" onclick="navigate('despesas')"><i class="fa-solid fa-wallet"></i> Despesas</button>
+    <button data-page="manejo" onclick="navigate('manejo')"><i class="fa-solid fa-arrows-rotate"></i> Manejo</button>
+    <button data-page="vendas" onclick="navigate('vendas')"><i class="fa-solid fa-hand-holding-dollar"></i> Vendas</button>
+  </nav>
+
+  <div class="nav-label">ANÁLISES E DADOS</div>
+  <nav class="nav">
+    <button data-page="relatorios" onclick="navigate('relatorios')"><i class="fa-solid fa-chart-line"></i> Relatórios</button>
+    <button data-page="backup" onclick="navigate('backup')"><i class="fa-solid fa-database"></i> Backup e dados</button>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <small>Controle da propriedade</small>
+    <div class="version"><span>Versão do sistema</span><strong>V2.0.0</strong></div>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="page-heading">
+      <button class="btn-icon mobile-menu" onclick="toggleSidebar()" aria-label="Abrir menu"><i class="fa-solid fa-bars"></i></button>
+      <div>
+        <h2 id="pageTitle">Dashboard</h2>
+        <p id="pageSubtitle">Visão geral da operação</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span class="top-date" id="todayLabel"></span>
+      <button class="btn btn-primary" onclick="openLotForm()"><i class="fa-solid fa-circle-plus"></i> Novo lote</button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-intro">
+        <div><h3>Resumo da propriedade</h3><p>Acompanhe seus indicadores financeiros e produtivos.</p></div>
+        <button class="btn btn-secondary" onclick="renderAll()"><i class="fa-solid fa-rotate"></i> Atualizar painel</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-top"><span class="stat-label">Investimento total</span><span class="stat-icon"><i class="fa-solid fa-sack-dollar"></i></span></div>
+          <div class="stat-value" id="dashInvest">R$ 0,00</div>
+          <div class="stat-foot">Compra e despesas registradas</div>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span class="stat-label">Receita prevista</span><span class="stat-icon"><i class="fa-solid fa-chart-line"></i></span></div>
+          <div class="stat-value" id="dashRevenue">R$ 0,00</div>
+          <div class="stat-foot">Estimativa dos lotes em criação</div>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span class="stat-label">Resultado previsto</span><span class="stat-icon"><i class="fa-solid fa-scale-balanced"></i></span></div>
+          <div class="stat-value" id="dashProfit">R$ 0,00</div>
+          <div class="stat-foot">Receita estimada menos custos</div>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span class="stat-label">Animais em criação</span><span class="stat-icon"><i class="fa-solid fa-paw"></i></span></div>
+          <div class="stat-value" id="dashAnimals">0</div>
+          <div class="stat-foot" id="dashLots">0 lotes ativos</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-header"><h3><i class="fa-solid fa-bell" style="color:var(--orange2);margin-right:7px"></i> Alertas e acompanhamento</h3><small id="alertCount">0 alertas</small></div>
+          <div class="alert-list" id="dashboardAlerts"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><h3>Indicadores financeiros</h3><small>Visão geral</small></div>
+          <div class="result-grid">
+            <div class="result-item"><small>Despesas adicionais</small><strong id="dashExpenses">R$ 0,00</strong></div>
+            <div class="result-item"><small>Receita realizada</small><strong id="dashRealized">R$ 0,00</strong></div>
+            <div class="result-item"><small>Animais vendidos</small><strong id="dashSold">0</strong></div>
+            <div class="result-item"><small>Custo médio por animal</small><strong id="dashUnitCost">R$ 0,00</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h3><i class="fa-solid fa-layer-group" style="color:var(--orange2);margin-right:7px"></i> Desempenho dos lotes</h3><button class="btn btn-secondary" onclick="navigate('lotes')">Ver todos <i class="fa-solid fa-arrow-right"></i></button></div>
+        <div id="dashboardLots" class="cards-list"></div>
+      </div>
+    </section>
+
+    <!-- LOTES -->
+    <section class="page" id="page-lotes">
+      <div class="page-intro">
+        <div><h3>Gestão de lotes</h3><p>Cadastre, edite e acompanhe os animais da propriedade.</p></div>
+        <button class="btn btn-primary" onclick="openLotForm()"><i class="fa-solid fa-circle-plus"></i> Cadastrar lote</button>
+      </div>
+      <div class="panel">
+        <div class="toolbar">
+          <input id="lotSearch" placeholder="Buscar lote..." oninput="renderLots()">
+          <select id="lotStatusFilter" onchange="renderLots()">
+            <option value="">Todos os status</option>
+            <option value="ativo">Em criação</option>
+            <option value="vendido">Encerrado</option>
+          </select>
+          <button class="btn btn-secondary" onclick="resetLotFilters()"><i class="fa-solid fa-filter-circle-xmark"></i> Limpar</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Lote</th><th>Entrada</th><th>Animais</th><th>Idade</th>
+              <th>Custo total</th><th>Receita prevista</th><th>Resultado</th><th>Status</th><th>Ações</th>
+            </tr></thead>
+            <tbody id="lotRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- DESPESAS -->
+    <section class="page" id="page-despesas">
+      <div class="page-intro">
+        <div><h3>Controle de despesas</h3><p>Registre os custos de alimentação, medicamentos, estrutura e operação.</p></div>
+        <button class="btn btn-primary" onclick="openExpenseForm()"><i class="fa-solid fa-circle-plus"></i> Nova despesa</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-label">Total de despesas adicionais</div><div class="stat-value" id="expenseTotal">R$ 0,00</div></div>
+        <div class="stat"><div class="stat-label">Despesas neste mês</div><div class="stat-value" id="expenseMonth">R$ 0,00</div></div>
+        <div class="stat"><div class="stat-label">Quantidade de lançamentos</div><div class="stat-value" id="expenseCount">0</div></div>
+        <div class="stat"><div class="stat-label">Maior categoria</div><div class="stat-value" id="expenseTop" style="font-size:17px">—</div></div>
+      </div>
+      <div class="panel">
+        <div class="toolbar">
+          <input id="expenseSearch" placeholder="Buscar despesa..." oninput="renderExpenses()">
+          <select id="expenseLotFilter" onchange="renderExpenses()"><option value="">Todos os lotes</option></select>
+          <select id="expenseCategoryFilter" onchange="renderExpenses()">
+            <option value="">Todas as categorias</option>
+            <option>Alimentação</option><option>Medicamentos</option><option>Vacinas</option>
+            <option>Mão de obra</option><option>Transporte</option><option>Energia e água</option><option>Instalações</option><option>Outros</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Data</th><th>Descrição</th><th>Lote</th><th>Categoria</th><th>Valor</th><th>Ações</th></tr></thead><tbody id="expenseRows"></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- MANEJO -->
+    <section class="page" id="page-manejo">
+      <div class="page-intro">
+        <div><h3>Manejo e movimentações</h3><p>Registre entradas, perdas e ajustes de quantidade dos animais.</p></div>
+        <button class="btn btn-primary" onclick="openMovementForm()"><i class="fa-solid fa-circle-plus"></i> Registrar movimentação</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-label">Entradas registradas</div><div class="stat-value" id="movementEntries">0</div></div>
+        <div class="stat"><div class="stat-label">Perdas registradas</div><div class="stat-value" id="movementLosses">0</div></div>
+        <div class="stat"><div class="stat-label">Ajustes de quantidade</div><div class="stat-value" id="movementAdjustments">0</div></div>
+        <div class="stat"><div class="stat-label">Movimentações totais</div><div class="stat-value" id="movementCount">0</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h3>Histórico de movimentações</h3><small>Registro operacional</small></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Data</th><th>Lote</th><th>Tipo</th><th>Quantidade</th><th>Observação</th><th>Ações</th></tr></thead><tbody id="movementRows"></tbody></table>
+        </div>
+      </div>
+      <div class="note"><i class="fa-solid fa-circle-info"></i> O registro de movimentações atualiza a quantidade atual do lote. Uma movimentação lançada incorretamente pode ser excluída para reverter seu efeito.</div>
+    </section>
+
+    <!-- VENDAS -->
+    <section class="page" id="page-vendas">
+      <div class="page-intro">
+        <div><h3>Vendas e receitas</h3><p>Registre as vendas realizadas e acompanhe o resultado financeiro.</p></div>
+        <button class="btn btn-primary" onclick="openSaleForm()"><i class="fa-solid fa-circle-plus"></i> Registrar venda</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-label">Receita realizada</div><div class="stat-value" id="salesRevenue">R$ 0,00</div></div>
+        <div class="stat"><div class="stat-label">Animais vendidos</div><div class="stat-value" id="salesAnimals">0</div></div>
+        <div class="stat"><div class="stat-label">Peso comercializado</div><div class="stat-value" id="salesWeight">0 kg</div></div>
+        <div class="stat"><div class="stat-label">Preço médio por kg</div><div class="stat-value" id="salesAverage">R$ 0,00</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h3>Histórico de vendas</h3><small>Vendas efetivadas</small></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Data</th><th>Lote</th><th>Comprador</th><th>Animais</th><th>Peso total</th><th>Preço/kg</th><th>Receita</th><th>Ações</th></tr></thead><tbody id="salesRows"></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- RELATORIOS -->
+    <section class="page" id="page-relatorios">
+      <div class="page-intro">
+        <div><h3>Relatórios gerenciais</h3><p>Consolidação dos custos, receitas e desempenho produtivo.</p></div>
+        <button class="btn btn-secondary" onclick="exportCSV()"><i class="fa-solid fa-file-csv"></i> Exportar CSV</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-label">Custo consolidado</div><div class="stat-value" id="reportCost">R$ 0,00</div></div>
+        <div class="stat"><div class="stat-label">Receita realizada</div><div class="stat-value" id="reportRevenue">R$ 0,00</div></div>
+        <div class="stat"><div class="stat-label">Resultado realizado</div><div class="stat-value" id="reportProfit">R$ 0,00</div></div>
+        <div class="stat"><div class="stat-label">Margem realizada</div><div class="stat-value" id="reportMargin">0%</div></div>
+      </div>
+      <div class="grid-equal">
+        <div class="panel">
+          <div class="panel-header"><h3>Despesas por categoria</h3></div>
+          <div id="categoryChart" class="chart-placeholder"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><h3>Resumo produtivo</h3></div>
+          <div class="result-grid">
+            <div class="result-item"><small>Total de lotes</small><strong id="reportLots">0</strong></div>
+            <div class="result-item"><small>Lotes ativos</small><strong id="reportActive">0</strong></div>
+            <div class="result-item"><small>Animais comprados</small><strong id="reportBought">0</strong></div>
+            <div class="result-item"><small>Animais atuais</small><strong id="reportCurrent">0</strong></div>
+            <div class="result-item"><small>Animais vendidos</small><strong id="reportSold">0</strong></div>
+            <div class="result-item"><small>Perdas registradas</small><strong id="reportLoss">0</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:15px">
+        <div class="panel-header"><h3>Resultado financeiro por lote</h3></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Lote</th><th>Investimento</th><th>Receita realizada</th><th>Receita prevista restante</th><th>Resultado realizado</th><th>Animais atuais</th></tr></thead><tbody id="reportLotRows"></tbody></table>
+        </div>
+      </div>
+      <div class="note"><i class="fa-solid fa-circle-info"></i> Os resultados previstos são estimativas com base nos dados informados. O resultado realizado considera as vendas registradas e os custos cadastrados. Não representa apuração contábil ou fiscal.</div>
+    </section>
+
+    <!-- BACKUP -->
+    <section class="page" id="page-backup">
+      <div class="page-intro">
+        <div><h3>Backup e gerenciamento de dados</h3><p>Proteja seus registros e transfira os dados entre dispositivos.</p></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h3><i class="fa-solid fa-shield-halved" style="color:var(--orange2);margin-right:7px"></i> Segurança dos registros</h3></div>
+        <div class="backup-box">
+          <i class="fa-solid fa-file-export"></i>
+          <div><h4>Exportar backup completo</h4><p>Gera um arquivo JSON com lotes, despesas, manejo e vendas.</p></div>
+          <button class="btn btn-primary" onclick="exportBackup()">Exportar backup</button>
+        </div>
+        <div class="backup-box">
+          <i class="fa-solid fa-file-import"></i>
+          <div><h4>Restaurar backup</h4><p>Importa um arquivo JSON anteriormente exportado. Os dados atuais serão substituídos.</p></div>
+          <button class="btn btn-secondary" onclick="$('backupFile').click()">Selecionar arquivo</button>
+          <input id="backupFile" type="file" accept=".json,application/json" hidden onchange="importBackup(event)">
+        </div>
+        <div class="backup-box">
+          <i class="fa-solid fa-file-csv"></i>
+          <div><h4>Exportar relatório CSV</h4><p>Gera uma planilha simples com os lotes cadastrados.</p></div>
+          <button class="btn btn-secondary" onclick="exportCSV()">Exportar CSV</button>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:15px">
+        <div class="panel-header"><h3>Armazenamento</h3></div>
+        <div class="result-grid">
+          <div class="result-item"><small>Lotes cadastrados</small><strong id="backupLots">0</strong></div>
+          <div class="result-item"><small>Despesas registradas</small><strong id="backupExpenses">0</strong></div>
+          <div class="result-item"><small>Movimentações registradas</small><strong id="backupMovements">0</strong></div>
+          <div class="result-item"><small>Vendas registradas</small><strong id="backupSales">0</strong></div>
+        </div>
+        <div class="note"><i class="fa-solid fa-triangle-exclamation"></i> Os dados ficam armazenados neste navegador e dispositivo. Limpar os dados do navegador ou trocar de aparelho pode causar perda de informações. Faça backups regularmente.</div>
+      </div>
+    </section>
+
+    <footer>Gestão Suína V2.0.0 · Controle gerencial de lotes, custos, manejo e vendas.</footer>
+  </div>
+</main>
+
+<nav class="mobile-nav">
+  <button class="active" data-page="dashboard" onclick="navigate('dashboard')"><i class="fa-solid fa-gauge-high"></i><span>Painel</span></button>
+  <button data-page="lotes" onclick="navigate('lotes')"><i class="fa-solid fa-layer-group"></i><span>Lotes</span></button>
+  <button data-page="despesas" onclick="navigate('despesas')"><i class="fa-solid fa-wallet"></i><span>Despesas</span></button>
+  <button data-page="manejo" onclick="navigate('manejo')"><i class="fa-solid fa-arrows-rotate"></i><span>Manejo</span></button>
+  <button data-page="vendas" onclick="navigate('vendas')"><i class="fa-solid fa-hand-holding-dollar"></i><span>Vendas</span></button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<!-- MODAL LOTE -->
+<div class="modal-backdrop" id="lotModal">
+ <div class="modal">
+  <div class="modal-head"><h3 id="lotModalTitle">Cadastrar lote</h3><button class="btn-icon" onclick="closeModal('lotModal')"><i class="fa-solid fa-xmark"></i></button></div>
+  <form id="lotForm">
+   <input type="hidden" id="lotId">
+   <div class="form-grid">
+    <div class="field full"><label>Nome / identificação do lote *</label><input id="lotName" required placeholder="Ex.: Lote Novembro 01"></div>
+    <div class="field"><label>Data de entrada *</label><input id="lotStart" type="date" required></div>
+    <div class="field"><label>Quantidade inicial *</label><input id="lotQty" type="number" min="1" step="1" required></div>
+    <div class="field"><label>Preço de compra por animal (R$) *</label><input id="lotBuy" type="number" min="0" step=".01" required></div>
+    <div class="field"><label>Ração consumida (kg)</label><input id="lotFeedKg" type="number" min="0" step=".1" value="0"></div>
+    <div class="field"><label>Preço da ração por kg (R$)</label><input id="lotFeedPrice" type="number" min="0" step=".01" value="0"></div>
+    <div class="field"><label>Medicamentos e vacinas (R$)</label><input id="lotMeds" type="number" min="0" step=".01" value="0"></div>
+    <div class="field"><label>Outros custos iniciais (R$)</label><input id="lotOther" type="number" min="0" step=".01" value="0"></div>
+    <div class="field"><label>Prazo planejado (dias)</label><input id="lotDays" type="number" min="1" step="1" value="150"></div>
+    <div class="field"><label>Peso-alvo por animal (kg)</label><input id="lotWeight" type="number" min="0" step=".1" placeholder="Ex.: 100"></div>
+    <div class="field"><label>Preço estimado de venda (R$/kg)</label><input id="lotSaleKg" type="number" min="0" step=".01" placeholder="Preço local"></div>
+    <div class="field"><label>Venda estimada por animal (R$)</label><input id="lotSaleHead" type="number" min="0" step=".01" placeholder="Opcional"></div>
+    <div class="field"><label>Status</label><select id="lotStatus"><option value="ativo">Em criação</option><option value="vendido">Encerrado</option></select></div>
+    <div class="field full"><label>Observações</label><textarea id="lotNotes" placeholder="Fornecedor, linhagem, vacinação, observações..."></textarea></div>
+   </div>
+   <div class="note"><i class="fa-solid fa-circle-info"></i> A quantidade atual é controlada pelo módulo Manejo e pelas vendas. Ao editar um lote existente, as movimentações já registradas serão preservadas.</div>
+   <div class="form-actions"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Salvar lote</button><button class="btn btn-secondary" type="button" onclick="closeModal('lotModal')">Cancelar</button></div>
+  </form>
+ </div>
+</div>
+
+<!-- MODAL DESPESA -->
+<div class="modal-backdrop" id="expenseModal">
+ <div class="modal">
+  <div class="modal-head"><h3 id="expenseModalTitle">Nova despesa</h3><button class="btn-icon" onclick="closeModal('expenseModal')"><i class="fa-solid fa-xmark"></i></button></div>
+  <form id="expenseForm">
+   <input type="hidden" id="expenseId">
+   <div class="form-grid">
+    <div class="field"><label>Data *</label><input id="expenseDate" type="date" required></div>
+    <div class="field"><label>Categoria *</label><select id="expenseCategory" required><option>Alimentação</option><option>Medicamentos</option><option>Vacinas</option><option>Mão de obra</option><option>Transporte</option><option>Energia e água</option><option>Instalações</option><option>Outros</option></select></div>
+    <div class="field full"><label>Descrição *</label><input id="expenseDescription" required placeholder="Ex.: Compra de ração"></div>
+    <div class="field"><label>Lote relacionado</label><select id="expenseLot"></select></div>
+    <div class="field"><label>Valor (R$) *</label><input id="expenseValue" type="number" min=".01" step=".01" required></div>
+    <div class="field full"><label>Observações</label><textarea id="expenseNotes"></textarea></div>
+   </div>
+   <div class="form-actions"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Salvar despesa</button><button class="btn btn-secondary" type="button" onclick="closeModal('expenseModal')">Cancelar</button></div>
+  </form>
+ </div>
+</div>
+
+<!-- MODAL MANEJO -->
+<div class="modal-backdrop" id="movementModal">
+ <div class="modal">
+  <div class="modal-head"><h3>Registrar movimentação</h3><button class="btn-icon" onclick="closeModal('movementModal')"><i class="fa-solid fa-xmark"></i></button></div>
+  <form id="movementForm">
+   <div class="form-grid">
+    <div class="field"><label>Data *</label><input id="movementDate" type="date" required></div>
+    <div class="field"><label>Lote *</label><select id="movementLot" required></select></div>
+    <div class="field"><label>Tipo *</label><select id="movementType" required onchange="updateMovementHelp()"><option value="perda">Perda / mortalidade</option><option value="entrada">Entrada de animais</option><option value="ajuste">Ajuste de quantidade atual</option></select></div>
+    <div class="field"><label>Quantidade *</label><input id="movementQty" type="number" min="1" step="1" required></div>
+    <div class="field full"><label>Observação / justificativa</label><textarea id="movementNotes" placeholder="Descreva o motivo ou a ocorrência..."></textarea></div>
+   </div>
+   <div class="note" id="movementHelp">A quantidade informada será subtraída do lote selecionado.</div>
+   <div class="form-actions"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Registrar</button><button class="btn btn-secondary" type="button" onclick="closeModal('movementModal')">Cancelar</button></div>
+  </form>
+ </div>
+</div>
+
+<!-- MODAL VENDA -->
+<div class="modal-backdrop" id="saleModal">
+ <div class="modal">
+  <div class="modal-head"><h3>Registrar venda</h3><button class="btn-icon" onclick="closeModal('saleModal')"><i class="fa-solid fa-xmark"></i></button></div>
+  <form id="saleForm">
+   <div class="form-grid">
+    <div class="field"><label>Data da venda *</label><input id="saleDate" type="date" required></div>
+    <div class="field"><label>Lote *</label><select id="saleLot" required onchange="updateSalePreview()"></select></div>
+    <div class="field full"><label>Comprador</label><input id="saleBuyer" placeholder="Nome do comprador"></div>
+    <div class="field"><label>Quantidade de animais *</label><input id="saleQty" type="number" min="1" step="1" required oninput="updateSalePreview()"></div>
+    <div class="field"><label>Peso total vendido (kg) *</label><input id="saleWeight" type="number" min=".1" step=".1" required oninput="updateSalePreview()"></div>
+    <div class="field"><label>Preço por kg (R$) *</label><input id="salePrice" type="number" min=".01" step=".01" required oninput="updateSalePreview()"></div>
+    <div class="field"><label>Receita calculada</label><input id="salePreview" readonly value="R$ 0,00"></div>
+    <div class="field full"><label>Observações</label><textarea id="saleNotes"></textarea></div>
+   </div>
+   <div class="note"><i class="fa-solid fa-circle-info"></i> Ao registrar a venda, a quantidade será descontada do lote. A exclusão da venda reverte essa quantidade.</div>
+   <div class="form-actions"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Confirmar venda</button><button class="btn btn-secondary" type="button" onclick="closeModal('saleModal')">Cancelar</button></div>
+  </form>
+ </div>
+</div>
+
+<script>
+'use strict';
+
+/* ==========================================================
+   GESTÃO SUÍNA V2.0.0
+   Armazenamento local + migração da versão anterior
+========================================================== */
+
+const DB_KEY = 'gestaoSuinaDatabaseV2';
+const OLD_KEY = 'gestaoSuinaLots';
+
+const $ = id => document.getElementById(id);
+const money = value => (Number(value)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const number = value => Number(value)||0;
+const today = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
+const dateFmt = value => {
+  if(!value) return '—';
+  const p=String(value).split('-');
+  return p.length===3 ? `${p[2]}/${p[1]}/${p[0]}` : value;
+};
+const daysBetween = (start,end=new Date()) => {
+  if(!start) return 0;
+  const d=new Date(start+'T12:00:00');
+  return Math.max(0,Math.floor((end-d)/86400000));
+};
+const uid = () => `${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
+
+let db = loadDatabase();
+
+function emptyDatabase(){
+  return {version:2,lots:[],expenses:[],movements:[],sales:[]};
+}
+
+function normalizeDatabase(data){
+  const clean=emptyDatabase();
+  if(!data || typeof data!=='object') return clean;
+  clean.lots=Array.isArray(data.lots)?data.lots:[];
+  clean.expenses=Array.isArray(data.expenses)?data.expenses:[];
+  clean.movements=Array.isArray(data.movements)?data.movements:[];
+  clean.sales=Array.isArray(data.sales)?data.sales:[];
+  clean.lots=clean.lots.map(l=>({
+    id:String(l.id||uid()),
+    name:String(l.name||'Lote sem nome'),
+    start:l.start||today(),
+    qty:number(l.qty),
+    currentQty:l.currentQty===undefined?number(l.qty):number(l.currentQty),
+    buy:number(l.buy),
+    feedKg:number(l.feedKg),
+    feedPrice:number(l.feedPrice),
+    meds:number(l.meds),
+    other:number(l.other),
+    days:number(l.days)||150,
+    targetWeight:number(l.targetWeight),
+    saleKg:number(l.saleKg),
+    saleHead:number(l.saleHead),
+    status:l.status||'ativo',
+    notes:String(l.notes||''),
+    createdAt:l.createdAt||new Date().toISOString()
+  }));
+  clean.expenses=clean.expenses.map(e=>({...e,id:String(e.id||uid()),value:number(e.value)}));
+  clean.movements=clean.movements.map(m=>({...m,id:String(m.id||uid()),qty:number(m.qty)}));
+  clean.sales=clean.sales.map(s=>({...s,id:String(s.id||uid()),qty:number(s.qty),weight:number(s.weight),price:number(s.price),revenue:number(s.revenue)}));
+  return clean;
+}
+
+function loadDatabase(){
+  try{
+    const current=localStorage.getItem(DB_KEY);
+    if(current){
+      return normalizeDatabase(JSON.parse(current));
+    }
+
+    // Migração dos lotes da versão original.
+    const old=localStorage.getItem(OLD_KEY);
+    if(old){
+      const oldLots=JSON.parse(old);
+      const migrated=emptyDatabase();
+      migrated.lots=(Array.isArray(oldLots)?oldLots:[]).map(l=>({
+        id:String(l.id||uid()),
+        name:l.name||'Lote importado',
+        start:l.start||today(),
+        qty:number(l.qty),
+        currentQty:l.currentQty===undefined?number(l.qty):number(l.currentQty),
+        buy:number(l.buy),
+        feedKg:number(l.feedKg),
+        feedPrice:number(l.feedPrice),
+        meds:number(l.meds),
+        other:number(l.other),
+        days:number(l.days)||150,
+        targetWeight:number(l.targetWeight),
+        saleKg:number(l.saleKg),
+        saleHead:number(l.saleHead),
+        status:l.status||'ativo',
+        notes:l.notes||'',
+        createdAt:new Date().toISOString()
+      }));
+      localStorage.setItem(DB_KEY,JSON.stringify(migrated));
+      return migrated;
+    }
+    return emptyDatabase();
+  }catch(error){
+    console.error('Falha ao carregar dados:',error);
+    return emptyDatabase();
+  }
+}
+
+function persist(){
+  try{
+    localStorage.setItem(DB_KEY,JSON.stringify(db));
+    return true;
+  }catch(error){
+    console.error(error);
+    toast('Não foi possível salvar. Verifique o espaço do navegador.',true);
+    return false;
+  }
+}
+
+function esc(value){
+  return String(value??'').replace(/[&<>"']/g,c=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function toast(message,error=false){
+  const el=$('toast');
+  el.textContent=message;
+  el.style.background=error?'#45282c':'#1c342b';
+  el.style.borderColor=error?'#824047':'#347b5b';
+  el.style.color=error?'#ffc0c4':'#a5edc7';
+  el.classList.add('show');
+  clearTimeout(toast.timer);
+  toast.timer=setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+function navigate(page){
+  document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id==='page-'+page));
+  document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===page));
+  const titles={
+    dashboard:['Dashboard','Visão geral da operação'],
+    lotes:['Lotes','Cadastro e acompanhamento dos lotes'],
+    despesas:['Despesas','Controle de custos da propriedade'],
+    manejo:['Manejo','Movimentações dos animais'],
+    vendas:['Vendas','Registro de receitas realizadas'],
+    relatorios:['Relatórios','Análise financeira e produtiva'],
+    backup:['Backup e dados','Segurança e portabilidade dos registros']
+  };
+  $('pageTitle').textContent=titles[page][0];
+  $('pageSubtitle').textContent=titles[page][1];
+  $('sidebar').classList.remove('open');
+  renderAll();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleSidebar(){
+  $('sidebar').classList.toggle('open');
+}
+
+function openModal(id){$(id).classList.add('show')}
+function closeModal(id){$(id).classList.remove('show')}
+
+document.querySelectorAll('.modal-backdrop').forEach(backdrop=>{
+  backdrop.addEventListener('click',e=>{
+    if(e.target===backdrop) backdrop.classList.remove('show');
+  });
+});
+
+function lotById(id){return db.lots.find(l=>l.id===id)}
+function lotName(id){return lotById(id)?.name||'Lote não encontrado'}
+
+/* ==========================================================
+   CÁLCULOS
+========================================================== */
+
+function baseCost(lot){
+  const purchase=number(lot.qty)*number(lot.buy);
+  const feed=number(lot.feedKg)*number(lot.feedPrice);
+  return purchase+feed+number(lot.meds)+number(lot.other);
+}
+
+function extraExpenses(lotId){
+  return db.expenses
+    .filter(e=>e.lotId===lotId)
+    .reduce((sum,e)=>sum+number(e.value),0);
+}
+
+function totalLotCost(lot){
+  return baseCost(lot)+extraExpenses(lot.id);
+}
+
+function salesForLot(lotId){
+  return db.sales.filter(s=>s.lotId===lotId);
+}
+
+function realizedRevenue(lotId){
+  return salesForLot(lotId).reduce((sum,s)=>sum+number(s.revenue),0);
+}
+
+function predictedRevenue(lot){
+  if(lot.saleHead>0) return number(lot.currentQty)*number(lot.saleHead);
+  return number(lot.currentQty)*number(lot.targetWeight)*number(lot.saleKg);
+}
+
+function lotMetrics(lot){
+  const cost=totalLotCost(lot);
+  const revenue=predictedRevenue(lot);
+  const realized=realizedRevenue(lot.id);
+  const age=daysBetween(lot.start);
+  const target=new Date((lot.start||today())+'T12:00:00');
+  target.setDate(target.getDate()+(number(lot.days)||150));
+  const remaining=Math.ceil((target-new Date())/86400000);
+  return {
+    cost,revenue,realized,age,target,remaining,
+    projectedProfit:revenue-cost,
+    unitCost:lot.currentQty?cost/lot.currentQty:0
+  };
+}
+
+function totalExpenses(){
+  return db.expenses.reduce((s,e)=>s+number(e.value),0);
+}
+
+/* ==========================================================
+   LOTES
+========================================================== */
+
+function openLotForm(id=null){
+  $('lotForm').reset();
+  $('lotId').value='';
+  $('lotStart').value=today();
+  $('lotFeedKg').value=0;
+  $('lotFeedPrice').value=0;
+  $('lotMeds').value=0;
+  $('lotOther').value=0;
+  $('lotDays').value=150;
+  $('lotStatus').value='ativo';
+  $('lotModalTitle').textContent=id?'Editar lote':'Cadastrar lote';
+
+  if(id){
+    const l=lotById(id);
+    if(!l) return;
+    $('lotId').value=l.id;
+    $('lotName').value=l.name;
+    $('lotStart').value=l.start;
+    $('lotQty').value=l.qty;
+    $('lotBuy').value=l.buy;
+    $('lotFeedKg').value=l.feedKg;
+    $('lotFeedPrice').value=l.feedPrice;
+    $('lotMeds').value=l.meds;
+    $('lotOther').value=l.other;
+    $('lotDays').value=l.days;
+    $('lotWeight').value=l.targetWeight;
+    $('lotSaleKg').value=l.saleKg;
+    $('lotSaleHead').value=l.saleHead;
+    $('lotStatus').value=l.status;
+    $('lotNotes').value=l.notes;
+  }
+  openModal('lotModal');
+}
+
+function saveLot(event){
+  event.preventDefault();
+  const id=$('lotId').value;
+  const old=id?lotById(id):null;
+  const qty=number($('lotQty').value);
+  if(qty<1){toast('Informe uma quantidade inicial válida.',true);return;}
+
+  const currentQty=old?old.currentQty:qty;
+  if(qty<currentQty){
+    toast('A quantidade inicial não pode ser menor que a quantidade atual do lote.',true);
+    return;
+  }
+
+  const lot={
+    id:id||uid(),
+    name:$('lotName').value.trim(),
+    start:$('lotStart').value,
+    qty,
+    currentQty,
+    buy:number($('lotBuy').value),
+    feedKg:number($('lotFeedKg').value),
+    feedPrice:number($('lotFeedPrice').value),
+    meds:number($('lotMeds').value),
+    other:number($('lotOther').value),
+    days:number($('lotDays').value)||150,
+    targetWeight:number($('lotWeight').value),
+    saleKg:number($('lotSaleKg').value),
+    saleHead:number($('lotSaleHead').value),
+    status:$('lotStatus').value,
+    notes:$('lotNotes').value.trim(),
+    createdAt:old?.createdAt||new Date().toISOString()
+  };
+
+  if(!lot.name){toast('Informe o nome do lote.',true);return;}
+
+  const previous=db.lots;
+  db.lots=id?db.lots.map(l=>l.id===id?lot:l):[...db.lots,lot];
+  if(!persist()){db.lots=previous;return;}
+
+  closeModal('lotModal');
+  renderAll();
+  toast(id?'Lote atualizado com sucesso.':'Lote cadastrado com sucesso.');
+}
+
+function deleteLot(id){
+  const lot=lotById(id);
+  if(!lot)return;
+  const hasRecords=db.expenses.some(e=>e.lotId===id)||
+    db.movements.some(m=>m.lotId===id)||
+    db.sales.some(s=>s.lotId===id);
+
+  const message=hasRecords
+    ?'Este lote possui despesas, movimentações ou vendas vinculadas. Excluir o lote também removerá esses registros. Deseja continuar?'
+    :'Deseja realmente excluir este lote?';
+
+  if(!confirm(message))return;
+
+  const previous=db;
+  db={
+    ...db,
+    lots:db.lots.filter(l=>l.id!==id),
+    expenses:db.expenses.filter(e=>e.lotId!==id),
+    movements:db.movements.filter(m=>m.lotId!==id),
+    sales:db.sales.filter(s=>s.lotId!==id)
+  };
+  if(!persist()){db=previous;return;}
+  renderAll();
+  toast('Lote e registros vinculados excluídos.');
+}
+
+function resetLotFilters(){
+  $('lotSearch').value='';
+  $('lotStatusFilter').value='';
+  renderLots();
+}
+
+function renderLots(){
+  const search=($('lotSearch')?.value||'').toLowerCase();
+  const status=$('lotStatusFilter')?.value||'';
+  const list=db.lots.filter(l=>
+    l.name.toLowerCase().includes(search)&&(!status||l.status===status)
+  );
+
+  $('lotRows').innerHTML=list.map(l=>{
+    const m=lotMetrics(l);
+    let badge=l.status==='vendido'
+      ?'<span class="pill">Encerrado</span>'
+      :m.remaining<0
+        ?'<span class="pill bad">Prazo vencido</span>'
+        :m.remaining<=14
+          ?'<span class="pill warn">Atenção</span>'
+          :'<span class="pill good">Em criação</span>';
+
+    return `<tr>
+      <td><strong>${esc(l.name)}</strong></td>
+      <td>${dateFmt(l.start)}</td>
+      <td>${l.currentQty} / ${l.qty}</td>
+      <td>${m.age} dias</td>
+      <td>${money(m.cost)}</td>
+      <td>${money(m.revenue)}</td>
+      <td class="${m.projectedProfit>=0?'positive':'negative'}">${money(m.projectedProfit)}</td>
+      <td>${badge}</td>
+      <td><div class="row-actions">
+        <button class="btn-icon" title="Editar" onclick="openLotForm('${l.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
+        <button class="btn-icon" title="Excluir" onclick="deleteLot('${l.id}')"><i class="fa-solid fa-trash-can"></i></button>
+      </div></td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="9"><div class="empty"><i class="fa-solid fa-layer-group"></i><p>Nenhum lote encontrado.</p></div></td></tr>';
+}
+
+/* ==========================================================
+   DESPESAS
+========================================================== */
+
+function populateLotSelect(selectId,selected='',includeAll=false){
+  const el=$(selectId);
+  if(!el)return;
+  const first=includeAll?'<option value="">Todos os lotes</option>':'<option value="">Despesa geral / sem lote</option>';
+  el.innerHTML=first+db.lots.map(l=>
+    `<option value="${esc(l.id)}">${esc(l.name)}</option>`
+  ).join('');
+  if(selected)el.value=selected;
+}
+
+function openExpenseForm(id=null){
+  $('expenseForm').reset();
+  $('expenseId').value='';
+  $('expenseDate').value=today();
+  populateLotSelect('expenseLot');
+  $('expenseModalTitle').textContent=id?'Editar despesa':'Nova despesa';
+
+  if(id){
+    const e=db.expenses.find(x=>x.id===id);
+    if(!e)return;
+    $('expenseId').value=e.id;
+    $('expenseDate').value=e.date;
+    $('expenseCategory').value=e.category;
+    $('expenseDescription').value=e.description;
+    $('expenseValue').value=e.value;
+    $('expenseNotes').value=e.notes||'';
+    $('expenseLot').value=e.lotId||'';
+  }
+  openModal('expenseModal');
+}
+
+function saveExpense(event){
+  event.preventDefault();
+  const id=$('expenseId').value;
+  const old=id?db.expenses.find(e=>e.id===id):null;
+  const expense={
+    id:id||uid(),
+    date:$('expenseDate').value,
+    category:$('expenseCategory').value,
+    description:$('expenseDescription').value.trim(),
+    value:number($('expenseValue').value),
+    lotId:$('expenseLot').value,
+    notes:$('expenseNotes').value.trim()
+  };
+  if(!expense.description||expense.value<=0){toast('Informe descrição e valor válido.',true);return;}
+
+  const previous=db.expenses;
+  db.expenses=id?db.expenses.map(e=>e.id===id?expense:e):[...db.expenses,expense];
+  if(!persist()){db.expenses=previous;return;}
+  closeModal('expenseModal');
+  renderAll();
+  toast(id?'Despesa atualizada.':'Despesa registrada.');
+}
+
+function deleteExpense(id){
+  if(!confirm('Excluir esta despesa?'))return;
+  const previous=db.expenses;
+  db.expenses=db.expenses.filter(e=>e.id!==id);
+  if(!persist()){db.expenses=previous;return;}
+  renderAll();
+  toast('Despesa excluída.');
+}
+
+function renderExpenses(){
+  const search=($('expenseSearch')?.value||'').toLowerCase();
+  const lotFilter=$('expenseLotFilter')?.value||'';
+  const category=$('expenseCategoryFilter')?.value||'';
+
+  const list=db.expenses.filter(e=>
+    (e.description||'').toLowerCase().includes(search)&&
+    (!lotFilter||e.lotId===lotFilter)&&
+    (!category||e.category===category)
+  ).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+  const total=totalExpenses();
+  const now=today().slice(0,7);
+  const month=db.expenses.filter(e=>(e.date||'').startsWith(now)).reduce((s,e)=>s+number(e.value),0);
+  const categories={};
+  db.expenses.forEach(e=>categories[e.category]=(categories[e.category]||0)+number(e.value));
+  const top=Object.entries(categories).sort((a,b)=>b[1]-a[1])[0];
+
+  $('expenseTotal').textContent=money(total);
+  $('expenseMonth').textContent=money(month);
+  $('expenseCount').textContent=db.expenses.length;
+  $('expenseTop').textContent=top?top[0]:'—';
+
+  $('expenseRows').innerHTML=list.map(e=>`<tr>
+    <td>${dateFmt(e.date)}</td>
+    <td><strong>${esc(e.description)}</strong></td>
+    <td>${esc(e.lotId?lotName(e.lotId):'Geral')}</td>
+    <td><span class="pill info">${esc(e.category)}</span></td>
+    <td>${money(e.value)}</td>
+    <td><div class="row-actions">
+      <button class="btn-icon" title="Editar" onclick="openExpenseForm('${e.id}')"><i class="fa-solid fa-pen-to-square"></i></button>
+      <button class="btn-icon" title="Excluir" onclick="deleteExpense('${e.id}')"><i class="fa-solid fa-trash-can"></i></button>
+    </div></td>
+  </tr>`).join('')||'<tr><td colspan="6"><div class="empty"><i class="fa-solid fa-wallet"></i><p>Nenhuma despesa encontrada.</p></div></td></tr>';
+}
+
+/* ==========================================================
+   MANEJO E MOVIMENTAÇÕES
+========================================================== */
+
+function openMovementForm(){
+  if(!db.lots.length){toast('Cadastre um lote antes de registrar movimentações.',true);return;}
+  $('movementForm').reset();
+  $('movementDate').value=today();
+  populateLotSelect('movementLot');
+  $('movementQty').value=1;
+  updateMovementHelp();
+  openModal('movementModal');
+}
+
+function updateMovementHelp(){
+  const type=$('movementType').value;
+  const messages={
+    perda:'A quantidade informada será subtraída do lote.',
+    entrada:'A quantidade informada será adicionada ao total e à quantidade atual do lote.',
+    ajuste:'A quantidade informada será definida como a nova quantidade atual do lote.'
+  };
+  $('movementHelp').textContent=messages[type];
+  $('movementQty').min=type==='ajuste'?0:1;
+}
+
+function saveMovement(event){
+  event.preventDefault();
+  const lot=lotById($('movementLot').value);
+  if(!lot){toast('Selecione um lote válido.',true);return;}
+
+  const type=$('movementType').value;
+  const qty=number($('movementQty').value);
+  if(qty<1){toast('Informe uma quantidade válida.',true);return;}
+
+  let delta=0;
+  if(type==='perda'){
+    if(qty>lot.currentQty){toast('A quantidade de perdas não pode superar os animais atuais.',true);return;}
+    delta=-qty;
+  }else if(type==='entrada'){
+    delta=qty;
+  }else{
+    // Ajuste informa a nova quantidade atual, não a diferença.
+    delta=qty-lot.currentQty;
+  }
+
+  const previousLot={...lot};
+  const previousMovements=db.movements;
+
+  if(type==='entrada'){
+    lot.qty+=qty;
+    lot.currentQty+=qty;
+  }else if(type==='perda'){
+    lot.currentQty-=qty;
+  }else{
+    if(qty>lot.qty){
+      // Ajuste para cima: aumenta também o total de animais registrados.
+      lot.qty=qty;
+    }
+    lot.currentQty=qty;
+  }
+
+  const movement={
+    id:uid(),
+    date:$('movementDate').value,
+    lotId:lot.id,
+    type,
+    qty:type==='ajuste'?Math.abs(delta):qty,
+    previousQty:previousLot.currentQty,
+    newQty:lot.currentQty,
+    notes:$('movementNotes').value.trim()
+  };
+  db.movements=[...db.movements,movement];
+
+  if(!persist()){
+    Object.assign(lot,previousLot);
+    db.movements=previousMovements;
+    return;
+  }
+  closeModal('movementModal');
+  renderAll();
+  toast('Movimentação registrada.');
+}
+
+function deleteMovement(id){
+  const movement=db.movements.find(m=>m.id===id);
+  if(!movement)return;
+  if(!confirm('Excluir esta movimentação e reverter seu efeito no lote?'))return;
+
+  const lot=lotById(movement.lotId);
+  if(!lot){toast('Lote relacionado não encontrado.',true);return;}
+
+  const previousLot={...lot};
+  const previousMovements=db.movements;
+
+  if(movement.type==='perda'){
+    lot.currentQty+=movement.qty;
+  }else if(movement.type==='entrada'){
+    lot.currentQty-=movement.qty;
+    lot.qty=Math.max(lot.currentQty,lot.qty-movement.qty);
+  }else{
+    // Para ajuste, restaura a quantidade anterior registrada.
+    lot.currentQty=number(movement.previousQty);
+  }
+
+  if(lot.currentQty<0){
+    Object.assign(lot,previousLot);
+    toast('Não foi possível reverter: a quantidade resultaria em valor negativo.',true);
+    return;
+  }
+
+  db.movements=db.movements.filter(m=>m.id!==id);
+  if(!persist()){
+    Object.assign(lot,previousLot);
+    db.movements=previousMovements;
+    return;
+  }
+  renderAll();
+  toast('Movimentação excluída e quantidade atualizada.');
+}
+
+function renderMovements(){
+  const entries=db.movements.filter(m=>m.type==='entrada').reduce((s,m)=>s+m.qty,0);
+  const losses=db.movements.filter(m=>m.type==='perda').reduce((s,m)=>s+m.qty,0);
+  const adjustments=db.movements.filter(m=>m.type==='ajuste').length;
+  $('movementEntries').textContent=entries;
+  $('movementLosses').textContent=losses;
+  $('movementAdjustments').textContent=adjustments;
+  $('movementCount').textContent=db.movements.length;
+
+  const labels={entrada:'Entrada',perda:'Perda / mortalidade',ajuste:'Ajuste'};
+  const classes={entrada:'good',perda:'bad',ajuste:'warn'};
+
+  $('movementRows').innerHTML=[...db.movements].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(m=>`<tr>
+    <td>${dateFmt(m.date)}</td>
+    <td>${esc(lotName(m.lotId))}</td>
+    <td><span class="pill ${classes[m.type]||''}">${labels[m.type]||m.type}</span></td>
+    <td>${m.type==='ajuste'?`${m.previousQty} → ${m.newQty}`:m.qty}</td>
+    <td>${esc(m.notes||'—')}</td>
+    <td><button class="btn-icon" title="Excluir e reverter" onclick="deleteMovement('${m.id}')"><i class="fa-solid fa-trash-can"></i></button></td>
+  </tr>`).join('')||'<tr><td colspan="6"><div class="empty"><i class="fa-solid fa-arrows-rotate"></i><p>Nenhuma movimentação registrada.</p></div></td></tr>';
+}
+
+/* ==========================================================
+   VENDAS
+========================================================== */
+
+function openSaleForm(){
+  const available=db.lots.filter(l=>l.currentQty>0&&l.status==='ativo');
+  if(!available.length){toast('Não existem lotes ativos com animais disponíveis para venda.',true);return;}
+  $('saleForm').reset();
+  $('saleDate').value=today();
+  $('saleQty').value=1;
+  $('salePreview').value=money(0);
+  populateLotSelect('saleLot',available[0].id);
+  $('saleLot').innerHTML=available.map(l=>`<option value="${esc(l.id)}">${esc(l.name)} · ${l.currentQty} animais</option>`).join('');
+  updateSalePreview();
+  openModal('saleModal');
+}
+
+function updateSalePreview(){
+  const qty=number($('saleQty').value);
+  const weight=number($('saleWeight').value);
+  const price=number($('salePrice').value);
+  $('salePreview').value=money(weight*price);
+  const lot=lotById($('saleLot').value);
+  $('saleQty').max=lot?lot.currentQty:'';
+}
+
+function saveSale(event){
+  event.preventDefault();
+  const lot=lotById($('saleLot').value);
+  if(!lot){toast('Selecione um lote válido.',true);return;}
+
+  const qty=number($('saleQty').value);
+  const weight=number($('saleWeight').value);
+  const price=number($('salePrice').value);
+  if(qty<1||weight<=0||price<=0){toast('Informe quantidade, peso e preço válidos.',true);return;}
+  if(qty>lot.currentQty){toast(`Este lote possui apenas ${lot.currentQty} animal(is) disponível(is).`,true);return;}
+
+  const previousLot={...lot};
+  const previousSales=db.sales;
+  lot.currentQty-=qty;
+  if(lot.currentQty===0)lot.status='vendido';
+
+  const sale={
+    id:uid(),
+    date:$('saleDate').value,
+    lotId:lot.id,
+    buyer:$('saleBuyer').value.trim(),
+    qty,
+    weight,
+    price,
+    revenue:weight*price,
+    notes:$('saleNotes').value.trim()
+  };
+  db.sales=[...db.sales,sale];
+
+  if(!persist()){
+    Object.assign(lot,previousLot);
+    db.sales=previousSales;
+    return;
+  }
+  closeModal('saleModal');
+  renderAll();
+  toast('Venda registrada com sucesso.');
+}
+
+function deleteSale(id){
+  const sale=db.sales.find(s=>s.id===id);
+  if(!sale)return;
+  if(!confirm('Excluir esta venda e devolver os animais ao lote?'))return;
+
+  const lot=lotById(sale.lotId);
+  if(!lot){toast('Lote relacionado não encontrado.',true);return;}
+
+  const previousLot={...lot};
+  const previousSales=db.sales;
+  lot.currentQty+=sale.qty;
+  if(lot.status==='vendido')lot.status='ativo';
+  db.sales=db.sales.filter(s=>s.id!==id);
+
+  if(!persist()){
+    Object.assign(lot,previousLot);
+    db.sales=previousSales;
+    return;
+  }
+  renderAll();
+  toast('Venda excluída e quantidade devolvida ao lote.');
+}
+
+function renderSales(){
+  const revenue=db.sales.reduce((s,x)=>s+number(x.revenue),0);
+  const animals=db.sales.reduce((s,x)=>s+number(x.qty),0);
+  const weight=db.sales.reduce((s,x)=>s+number(x.weight),0);
+  $('salesRevenue').textContent=money(revenue);
+  $('salesAnimals').textContent=animals;
+  $('salesWeight').textContent=weight.toLocaleString('pt-BR')+' kg';
+  $('salesAverage').textContent=money(weight?revenue/weight:0);
+
+  $('saleRows').innerHTML=[...db.sales].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(s=>`<tr>
+    <td>${dateFmt(s.date)}</td>
+    <td>${esc(lotName(s.lotId))}</td>
+    <td>${esc(s.buyer||'—')}</td>
+    <td>${s.qty}</td>
+    <td>${number(s.weight).toLocaleString('pt-BR')} kg</td>
+    <td>${money(s.price)}</td>
+    <td class="positive">${money(s.revenue)}</td>
+    <td><button class="btn-icon" title="Excluir venda" onclick="deleteSale('${s.id}')"><i class="fa-solid fa-trash-can"></i></button></td>
+  </tr>`).join('')||'<tr><td colspan="8"><div class="empty"><i class="fa-solid fa-hand-holding-dollar"></i><p>Nenhuma venda registrada.</p></div></td></tr>';
+}
+
+/* ==========================================================
+   DASHBOARD
+========================================================== */
+
+function renderDashboard(){
+  const active=db.lots.filter(l=>l.status==='ativo');
+  const investment=db.lots.reduce((s,l)=>s+totalLotCost(l),0);
+  const revenue=active.reduce((s,l)=>s+predictedRevenue(l),0);
+  const profit=revenue-active.reduce((s,l)=>s+totalLotCost(l),0);
+  const animals=active.reduce((s,l)=>s+l.currentQty,0);
+  const realized=db.sales.reduce((s,x)=>s+number(x.revenue),0);
+  const sold=db.sales.reduce((s,x)=>s+number(x.qty),0);
+
+  $('dashInvest').textContent=money(investment);
+  $('dashRevenue').textContent=money(revenue);
+  $('dashProfit').textContent=money(profit);
+  $('dashProfit').className='stat-value '+(profit>=0?'positive':'negative');
+  $('dashAnimals').textContent=animals;
+  $('dashLots').textContent=active.length+' lotes ativos';
+  $('dashExpenses').textContent=money(totalExpenses());
+  $('dashRealized').textContent=money(realized);
+  $('dashSold').textContent=sold;
+  $('dashUnitCost').textContent=money(animals?active.reduce((s,l)=>s+totalLotCost(l),0)/animals:0);
+
+  const alerts=[];
+  active.forEach(l=>{
+    const m=lotMetrics(l);
+    if(m.remaining<0){
+      alerts.push({urgent:true,text:`${l.name}: prazo planejado ultrapassado há ${Math.abs(m.remaining)} dia(s). Reavalie o planejamento e o peso dos animais.`});
+    }else if(m.remaining<=7){
+      alerts.push({urgent:true,text:`${l.name}: prazo planejado termina em ${m.remaining} dia(s). Verifique o peso e as condições de comercialização.`});
+    }else if(m.remaining<=14){
+      alerts.push({urgent:false,text:`${l.name}: faltam ${m.remaining} dias para o prazo planejado. Comece a avaliar compradores e cotações.`});
+    }
+  });
+
+  $('alertCount').textContent=alerts.length+' alertas';
+  $('dashboardAlerts').innerHTML=alerts.map(a=>`<div class="alert ${a.urgent?'urgent':''}"><i class="fa-solid ${a.urgent?'fa-triangle-exclamation':'fa-clock'}"></i><span>${esc(a.text)}</span></div>`).join('')||
+    '<div class="alert ok"><i class="fa-solid fa-circle-check"></i><span>Nenhum alerta de prazo para os lotes ativos.</span></div>';
+
+  $('dashboardLots').innerHTML=active.slice(0,5).map(l=>{
+    const m=lotMetrics(l);
+    const progress=Math.min(100,Math.max(0,m.age/(number(l.days)||150)*100));
+    return `<div class="lot-card">
+      <div class="lot-card-head">
+        <div><h4>${esc(l.name)}</h4><p>Entrada em ${dateFmt(l.start)} · ${m.age} dias de criação</p></div>
+        <span class="pill ${m.remaining<=14?'warn':'good'}">${m.remaining<0?'Prazo vencido':m.remaining+' dias restantes'}</span>
+      </div>
+      <div class="progress"><span style="width:${progress}%"></span></div>
+      <div class="lot-card-stats">
+        <div><small>Animais atuais</small><strong>${l.currentQty}</strong></div>
+        <div><small>Investimento</small><strong>${money(m.cost)}</strong></div>
+        <div><small>Resultado previsto</small><strong class="${m.projectedProfit>=0?'positive':'negative'}">${money(m.projectedProfit)}</strong></div>
+      </div>
+    </div>`;
+  }).join('')||'<div class="empty"><i class="fa-solid fa-layer-group"></i><p>Nenhum lote cadastrado.</p><p>Comece cadastrando seu primeiro lote.</p></div>';
+}
+
+/* ==========================================================
+   RELATÓRIOS
+========================================================== */
+
+function renderReports(){
+  const cost=db.lots.reduce((s,l)=>s+totalLotCost(l),0);
+  const revenue=db.sales.reduce((s,x)=>s+number(x.revenue),0);
+  const profit=revenue-cost;
+  $('reportCost').textContent=money(cost);
+  $('reportRevenue').textContent=money(revenue);
+  $('reportProfit').textContent=money(profit);
+  $('reportProfit').className='stat-value '+(profit>=0?'positive':'negative');
+  $('reportMargin').textContent=(revenue?profit/revenue*100:0).toFixed(1)+'%';
+
+  const active=db.lots.filter(l=>l.status==='ativo');
+  $('reportLots').textContent=db.lots.length;
+  $('reportActive').textContent=active.length;
+  $('reportBought').textContent=db.lots.reduce((s,l)=>s+l.qty,0);
+  $('reportCurrent').textContent=db.lots.reduce((s,l)=>s+l.currentQty,0);
+  $('reportSold').textContent=db.sales.reduce((s,x)=>s+x.qty,0);
+  $('reportLoss').textContent=db.movements.filter(m=>m.type==='perda').reduce((s,m)=>s+m.qty,0);
+
+  const categories={};
+  db.expenses.forEach(e=>categories[e.category]=(categories[e.category]||0)+number(e.value));
+  const entries=Object.entries(categories).sort((a,b)=>b[1]-a[1]);
+  const max=Math.max(1,...entries.map(x=>x[1]));
+  $('categoryChart').innerHTML=entries.map(([name,value])=>`
+    <div class="bar-row">
+      <label>${esc(name)}</label>
+      <div class="bar-track"><span style="width:${value/max*100}%"></span></div>
+      <strong>${money(value)}</strong>
+    </div>`).join('')||'<div class="empty"><i class="fa-solid fa-chart-column"></i><p>Sem despesas adicionais para analisar.</p></div>';
+
+  $('reportLotRows').innerHTML=db.lots.map(l=>{
+    const m=lotMetrics(l);
+    const realized=realizedRevenue(l.id);
+    const remainingRevenue=predictedRevenue(l);
+    return `<tr>
+      <td><strong>${esc(l.name)}</strong></td>
+      <td>${money(m.cost)}</td>
+      <td class="positive">${money(realized)}</td>
+      <td>${money(remainingRevenue)}</td>
+      <td class="${realized-m.cost>=0?'positive':'negative'}">${money(realized-m.cost)}</td>
+      <td>${l.currentQty}</td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="6"><div class="empty"><p>Nenhum lote cadastrado.</p></div></td></tr>';
+}
+
+/* ==========================================================
+   BACKUP E EXPORTAÇÃO
+========================================================== */
+
+function downloadFile(filename,content,type){
+  const blob=new Blob([content],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportBackup(){
+  const payload={
+    app:'Gestão Suína',
+    version:2,
+    exportedAt:new Date().toISOString(),
+    data:db
+  };
+  downloadFile(`backup-gestao-suina-${today()}.json`,JSON.stringify(payload,null,2),'application/json');
+  toast('Backup exportado.');
+}
+
+function importBackup(event){
+  const file=event.target.files?.[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const parsed=JSON.parse(reader.result);
+      const imported=normalizeDatabase(parsed.data||parsed);
+      if(!Array.isArray(imported.lots)||!Array.isArray(imported.expenses)){
+        throw new Error('Estrutura inválida');
+      }
+      if(!confirm(`O backup contém ${imported.lots.length} lote(s), ${imported.expenses.length} despesa(s), ${imported.movements.length} movimentação(ões) e ${imported.sales.length} venda(s). Os dados atuais serão substituídos. Continuar?`)){
+        event.target.value='';
+        return;
+      }
+      const previous=db;
+      db=imported;
+      if(!persist()){
+        db=previous;
+        return;
+      }
+      renderAll();
+      toast('Backup restaurado com sucesso.');
+    }catch(error){
+      console.error(error);
+      toast('Arquivo inválido ou incompatível.',true);
+    }
+    event.target.value='';
+  };
+  reader.readAsText(file);
+}
+
+function csvCell(value){
+  return '"'+String(value??'').replace(/"/g,'""')+'"';
+}
+
+function exportCSV(){
+  const header=['Lote','Data de entrada','Quantidade inicial','Quantidade atual','Compra por animal','Custo total','Receita realizada','Receita prevista restante','Status'];
+  const rows=db.lots.map(l=>{
+    const m=lotMetrics(l);
+    return [
+      l.name,l.start,l.qty,l.currentQty,l.buy,m.cost,
+      realizedRevenue(l.id),predictedRevenue(l),l.status
+    ];
+  });
+  const csv='\uFEFF'+[header,...rows].map(row=>row.map(csvCell).join(';')).join('\n');
+  downloadFile(`relatorio-gestao-suina-${today()}.csv`,csv,'text/csv;charset=utf-8');
+  toast('Relatório CSV exportado.');
+}
+
+function renderBackup(){
+  $('backupLots').textContent=db.lots.length;
+  $('backupExpenses').textContent=db.expenses.length;
+  $('backupMovements').textContent=db.movements.length;
+  $('backupSales').textContent=db.sales.length;
+}
+
+/* ==========================================================
+   ATUALIZAÇÃO GERAL
+========================================================== */
+
+function renderAll(){
+  renderDashboard();
+  renderLots();
+  populateLotSelect('expenseLotFilter',$('expenseLotFilter')?.value||'',true);
+  renderExpenses();
+  renderMovements();
+  renderSales();
+  renderReports();
+  renderBackup();
+}
+
+$('lotForm').addEventListener('submit',saveLot);
+$('expenseForm').addEventListener('submit',saveExpense);
+$('movementForm').addEventListener('submit',saveMovement);
+$('saleForm').addEventListener('submit',saveSale);
+
+$('todayLabel').textContent=new Date().toLocaleDateString('pt-BR',{
+  weekday:'short',day:'2-digit',month:'short',year:'numeric'
+});
+
+renderAll();
+
+// Inicializa os seletores de lote e a interface.
+populateLotSelect('expenseLot');
+populateLotSelect('expenseLotFilter','',true);
+
+</script>
+</body>
+</html>
