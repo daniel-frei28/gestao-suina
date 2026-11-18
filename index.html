@@ -135,7 +135,7 @@ const DB_KEY = 'gestaoSuinaDatabaseV2';
 const OLD_KEY = 'gestaoSuinaLots';
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const supabase = supabaseClient;
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let user=null, property=null, db={version:3,lots:[],expenses:[],movements:[],sales:[]};
 let currentPage='dashboard';
